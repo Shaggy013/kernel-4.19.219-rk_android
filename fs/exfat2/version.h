@@ -1,0 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
+#define EXFAT_BASE_VERSION	"5.9"
+#define EXFAT_EXTRAVERSION	"6"
+#define EXFAT_VARIANT		"ndm"
+#define EXFAT_VERSION		EXFAT_BASE_VERSION "-" EXFAT_EXTRAVERSION EXFAT_VARIANT

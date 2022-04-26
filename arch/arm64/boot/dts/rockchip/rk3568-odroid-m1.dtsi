@@ -1,0 +1,216 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2021 Hardkernel Co., Ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include "rk3568.dtsi"
+#include "rk3568-odroid.dtsi"
+
+/ {
+	model = "ODROID-M1";
+	compatible = "rockchip,rk3568";
+
+	vcc2v5_sys: vcc2v5-ddr {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc2v5-sys";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <2500000>;
+		regulator-max-microvolt = <2500000>;
+		vin-supply = <&vcc3v3_sys>;
+	};
+
+	vcc3v3_bu: vcc3v3-bu {
+		compatible = "regulator-fixed";
+		regulator-name = "vcc3v3_bu";
+		regulator-always-on;
+		regulator-boot-on;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vcc5v0_sys>;
+	};
+};
+
+&combphy0_us {
+	status = "okay";
+};
+
+&combphy1_usq {
+	status = "okay";
+};
+
+&combphy2_psq {
+	status = "okay";
+};
+
+&gpio0 {
+	gpio-line-names =
+		/* GPIO0_A */
+		"", "", "", "", "", "", "", "",
+		/* GPIO0_B */
+		"", "", "",
+		"PIN_28", /* GPIO0_B3 */
+		"PIN_27", /* GPIO0_B4 */
+		"PIN_33", /* GPIO0_B5 */
+		"PIN_7", /* GPIO0_B6 */
+		"",
+		/* GPIO0_C */
+		"PIN_11", /* GPIO0_C0 */
+		"PIN_13", /* GPIO0_C1 */
+		"", "", "", "", "", "",
+		/* GPIO0_D */
+		"", "", "", "", "", "", "", "";
+};
+
+&gpio1 {
+	gpio-line-names =
+		/* GPIO1_A */
+		"", "", "", "", "", "", "", "",
+		/* GPIO1_B */
+		"", "", "", "", "", "", "", "",
+		/* GPIO1_C */
+		"", "", "", "", "", "", "", "",
+		/* GPIO1_D */
+		"", "", "", "", "", "", "", "";
+};
+
+&gpio2 {
+	gpio-line-names =
+		/* GPIO2_A */
+		"", "", "", "", "", "", "", "",
+		/* GPIO2_B */
+		"", "", "", "", "", "", "", "",
+		/* GPIO2_C */
+		"", "", "", "", "", "", "", "",
+		/* GPIO2_D */
+		"PIN_21", /* GPIO2_D0 */
+		"PIN_19", /* GPIO2_D1 */
+		"PIN_24", /* GPIO2_D2 */
+		"PIN_23", /* GPIO2_D3 */
+		"", "", "", "";
+};
+
+&gpio3 {
+	gpio-line-names =
+		/* GPIO3_A */
+		"", "", "", "", "", "", "", "",
+		/* GPIO3_B */
+		"", "",
+		"PIN_15", /* GPIO3_B2 */
+		"", "",
+		"PIN_5",  /* GPIO3_B5 */
+		"PIN_3",  /* GPIO3_B6 */
+		"",
+		/* GPIO3_C */
+		"", "", "", "", "", "",
+		"PIN_16", /* GPIO3_C6 */
+		"PIN_18", /* GPIO3_C7 */
+		/* GPIO3_D */
+		"PIN_12", /* GPIO3_D0 */
+		"PIN_22", /* GPIO3_D1 */
+		"PIN_26", /* GPIO3_D2 */
+		"PIN_32", /* GPIO3_D3 */
+		"PIN_36", /* GPIO3_D4 */
+		"PIN_35", /* GPIO3_D5 */
+		"PIN_8",  /* GPIO3_D6 */
+		"PIN_10"; /* GPIO3_D7 */
+};
+
+&gpio4 {
+	gpio-line-names =
+		/* GPIO4_A */
+		"", "", "", "", "", "", "", "",
+		/* GPIO4_B */
+		"", "", "", "", "", "",
+		"PIN_31", /* GPIO4_B6 */
+		"",
+		/* GPIO4_C */
+		"",
+		"PIN_29", /* GPIO4_C1 */
+		"", "", "", "", "", "",
+		/* GPIO4_D */
+		"", "", "", "", "", "", "", "";
+};
+
+&gmac0 {
+	phy-mode = "rgmii";
+	clock_in_out = "output";
+
+	snps,reset-gpio = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+	snps,reset-active-low;
+	/* Reset time is 20ms, 100ms for rtl8211f */
+	snps,reset-delays-us = <0 20000 100000>;
+
+	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
+	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>, <&cru CLK_MAC0_2TOP>;
+	assigned-clock-rates = <0>, <125000000>;
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&gmac0_miim
+		     &gmac0_tx_bus2
+		     &gmac0_rx_bus2
+		     &gmac0_rgmii_clk
+		     &gmac0_rgmii_bus>;
+
+	tx_delay = <0x3c>;
+	rx_delay = <0x2f>;
+
+	phy-handle = <&rgmii_phy0>;
+
+	status = "okay";
+};
+
+&mdio0 {
+	rgmii_phy0: phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x0>;
+	};
+};
+
+&pcie30phy {
+	status = "disabled";
+};
+
+&pcie3x2 {
+	status = "disabled";
+};
+
+&pinctrl {
+	sii902x {
+		sii902x_hdmi_int: sii902x-hdmi-int {
+			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+&pmu_io_domains {
+	pmuio2-supply = <&vcc3v3_pmu>;
+	vccio1-supply = <&vccio_acodec>;
+	vccio3-supply = <&vccio_sd>;
+	vccio4-supply = <&vcc_1v8>;
+	vccio5-supply = <&vcc_3v3>;
+	vccio6-supply = <&vcc_3v3>;
+	vccio7-supply = <&vcc_3v3>;
+};
+
+&route_dsi0 {
+	status = "disabled";
+	connect = <&vp1_out_dsi0>;
+};
+
+&bus_npu {
+	status = "disabled";
+};
+
+&rknpu {
+	status = "disabled";
+};
+
+&rknpu_mmu {
+	status = "disabled";
+};
